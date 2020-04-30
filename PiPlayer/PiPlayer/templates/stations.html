@@ -15,7 +15,7 @@
 </p>
 
 <table class="table">
-    <caption>List of available radio stations</caption>
+    <caption>Available radio stations</caption>
     <thead>
         <tr>
             <th scope="col">
@@ -37,7 +37,7 @@
                 {{ s.url }}
             </td>
             <td>
-                <a class="btn btn-link">Edit</a> |
+                <a class="btn btn-link" href="/edit/{{ s.name }}">Edit</a> |
                 <form action="radioUp" method="post">
                     <input type="hidden" name="name" value="{{ s.name }}"/>
                     <input class="btn-link" type="submit" value="Up"/>

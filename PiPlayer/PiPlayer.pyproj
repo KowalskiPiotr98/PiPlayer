@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PiPlayer\templates\stations.html" />
+    <Content Include="PiPlayer\templates\edit.html" />
     <Content Include="requirements.txt" />
     <Content Include="PiPlayer\static\content\bootstrap.css" />
     <Content Include="PiPlayer\static\content\bootstrap.min.css" />

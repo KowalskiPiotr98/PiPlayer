@@ -29,10 +29,6 @@ def stations():
         stations = radios,
     )
 
-@app.route('/changeUrl', methods=['POST'])
-def changeUrl(name):
-    return redirect('/stations')
-
 @app.route('/radioUp', methods=['POST'])
 def radioUp():
     name = request.form.get('name')
@@ -58,5 +54,40 @@ def radioDown():
                 temp = radios [i]
                 radios [i] = radios [i + 1]
                 radios [i + 1] = temp
+            break
+    return redirect('/stations')
+
+@app.route('/edit/<name>')
+def edit(name):
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if name == i.name:
+            return render_template(
+                'edit.html',
+                title="Edit",
+                year=datetime.now().year,
+                station = i,
+                )
+    return redirect('/stations')
+
+@app.route('/edit/<name>', methods=['POST'])
+def editPost(name):
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if i.name == name:
+            i.url = request.form.get('url')
+            break
+    return redirect('/stations')
+
+@app.route('/delete', methods=['POST'])
+def editDelete():
+    name = request.form.get('name')
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if i.name == name:
+            radios.remove(i)
             break
     return redirect('/stations')

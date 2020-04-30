@@ -1,0 +1,27 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<h1 class="row">Edit station {{ station.name }}</h1>
+<div class="row">
+    <form method="post" action="/edit/{{ station.name }}">
+        <div class="form-group">
+            <label for="url">Url</label>
+            <input class="form-control" type="url" name="url" id="url" value="{{ station.url }}"/>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Save"/>
+            <a class="btn btn-info" href="/stations">Back</a>
+        </div>
+    </form>
+</div>
+<div class="row">
+    <form method="post" action="/delete">
+        <input type="hidden" name="name" value="{{ station.name }}"/>
+        <div class="form-group">
+            <input type="submit" value="Delete" class="btn btn-danger"/>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
