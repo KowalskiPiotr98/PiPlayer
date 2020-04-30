@@ -45,6 +45,7 @@
     <Folder Include="PiPlayer\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PiPlayer\templates\new_station.html" />
     <Content Include="PiPlayer\templates\stations.html" />
     <Content Include="PiPlayer\templates\edit.html" />
     <Content Include="requirements.txt" />

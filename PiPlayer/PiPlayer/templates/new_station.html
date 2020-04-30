@@ -1,0 +1,27 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<h1 class="row">
+    Add new station
+</h1>
+
+<div class="row">
+    <form action="/newStation" method="post">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input class="form-control" type="text" placeholder="Station name" name="name" id="name"/>
+        </div>
+        <div class="form-group">
+            <label for="url">Url</label>
+            <input class="form-control" type="url" placeholder="Station stream URL" name="url" id="url"/>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Add" class="btn btn-primary"/>
+            <input type="reset" value="Clear" class="btn btn-secondary"/>
+            <a href="/stations" class="btn btn-info">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
