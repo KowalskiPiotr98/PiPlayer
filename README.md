@@ -1,8 +1,7 @@
-# PiPlayer
-Simple MP3 player intended for Raspberry Pi
-- Program będzie wykorzystywał wyjście dźwiękowe płytki
-- Pliki będą odczytywane z określonego katalogu – zarządzanie nimi (usuwanie/dodawanie nowych) przez interface www
-- Możliwość zaznaczenia przez interface www, żeby niektóre pliki nie były odtwarzane (nie da się ich wtedy również wybrać korzystając z przycisków na płytce)
-- Możliwość sterowania odtwarzaniem przez interface www (podobne funkcje co oferowane przez przyciski na płytce) 
-- Diody led oznaczające stany odtwarzania: pauza/odtwarzanie/wybieranie pliku/poziom głośności
-- Przyciski umożliwiające pauzowanie i wznowienie odtwarzania, zatrzymanie odtwarzania i przejście do trybu wyboru pliku, regulację głośności
+- Program wykorzystuje wyjście audio płytki
+- Odtwarzane będzie radio internetowe – lista dostępnych stacji możliwa do wglądu i edycji przez interface www
+- Możliwość sterowania odtwarzaniem z poziomu strony www oraz wykorzystując przyciski na płytce
+- Wyróżnione zostaną 3 stany: odtwarzanie, wybór stacji, zmiana głośności:
+                - w stanie odtwarzania zapalona jest dioda 1, wciskając przycisk 1 można zapauzować odtwarzanie (zapali się dioda 2) oraz je wznowić tym samym przyciskiem, wciskając przycisk 2 można przejść do stanu wyboru stacji, a wciskając przycisk 3 do stanu zmiany głośności
+                - w stanie wyboru stacji zapalona jest dioda 3, przyciskiem 1 wybiera się poprzednią stację z listy, przyciskiem 2 następną, przyciskiem 3 potwierdza wybór i wraca do stanu odtwarzania; w trakcie wybierania odtwarzana stacja jest zmieniana na bieżąco
+                - w stanie zmiany głośności przycisk 1 zmniejsza głośność o 25%, przycisk 2 zwiększa głośność o 25%, przycisk 3 potwierdza wybór i wraca do stanu odtwarzania, w tym stanie ilość zapalonych diod wskazuje na aktualnie wybrany poziom głośności (na przykład gdy jest ustawiony na 75% zapalone będą diody 1, 2 i 3).
