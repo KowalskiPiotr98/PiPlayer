@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import *
+from flask import render_template, request, redirect
 from PiPlayer import app
 from PiPlayer.station import *
 
@@ -29,12 +29,8 @@ def stations():
         stations = radios,
     )
 
-@app.route('/changeUrl', methods=['POST'])
-def changeUrl(name):
-    return redirect('/stations')
-
 @app.route('/radioUp', methods=['POST'])
-def radioUp():
+def radio_up():
     name = request.form.get('name')
     if name is None:
         return redirect('/stations')
@@ -48,7 +44,7 @@ def radioUp():
     return redirect('/stations')
 
 @app.route('/radioDown', methods=['POST'])
-def radioDown():
+def radio_down():
     name = request.form.get('name')
     if name is None:
         return redirect('/stations')
@@ -59,4 +55,59 @@ def radioDown():
                 radios [i] = radios [i + 1]
                 radios [i + 1] = temp
             break
+    return redirect('/stations')
+
+@app.route('/edit/<name>')
+def edit(name):
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if name == i.name:
+            return render_template(
+                'edit.html',
+                title="Edit",
+                year=datetime.now().year,
+                station = i,
+                )
+    return redirect('/stations')
+
+@app.route('/edit/<name>', methods=['POST'])
+def edit_post(name):
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if i.name == name:
+            i.url = request.form.get('url')
+            break
+    return redirect('/stations')
+
+@app.route('/delete', methods=['POST'])
+def edit_delete():
+    name = request.form.get('name')
+    if name is None:
+        return redirect('/stations')
+    for i in radios:
+        if i.name == name:
+            radios.remove(i)
+            break
+    return redirect('/stations')
+
+@app.route('/newStation')
+def new_station():
+    return render_template(
+        'new_station.html',
+        title = 'New station',
+        year = datetime.now().year
+        )
+
+@app.route('/newStation', methods = ['POST'])
+def new_station_post():
+    name = request.form.get('name')
+    url = request.form.get('url')
+    if name is None or url is None or name == '' or url == '':
+        return redirect('/newStation')
+    for i in radios:
+        if i.name == name:
+            return redirect('/newStation')
+    radios.append(station(name, url))
     return redirect('/stations')

@@ -11,19 +11,20 @@
 </style>
 
 <p>
-    <a class="btn btn-info">Add new</a>
+    <a class="btn btn-info" href="/newStation">Add new</a>
 </p>
 
 <table class="table">
+    <caption>Available radio stations</caption>
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 Name
             </th>
-            <th>
+            <th scope="col">
                 Url
             </th>
-            <th></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -36,7 +37,7 @@
                 {{ s.url }}
             </td>
             <td>
-                <a class="btn btn-link">Edit</a> |
+                <a class="btn btn-link" href="/edit/{{ s.name }}">Edit</a> |
                 <form action="radioUp" method="post">
                     <input type="hidden" name="name" value="{{ s.name }}"/>
                     <input class="btn-link" type="submit" value="Up"/>
