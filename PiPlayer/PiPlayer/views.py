@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import *
+from flask import render_template, request, redirect
 from PiPlayer import app
 from PiPlayer.station import *
 
