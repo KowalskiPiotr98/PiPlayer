@@ -1,6 +1,6 @@
 import mpd
 
-class player(object):
+class Player(object):
     def __init__(self, host = 'localhost', port = 6600):
         self.name = None
         self._host = host

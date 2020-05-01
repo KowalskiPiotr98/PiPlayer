@@ -33,7 +33,9 @@
         });
     });
     function play() {
-        $.post('/api/unpause').done(setName());
+        $.post('/api/unpause').done(setName()).fail(function () {
+            document.getElementById('name').innerHTML = 'No stations available';
+        });
     }
     function pause() {
         $.post('/api/pause');

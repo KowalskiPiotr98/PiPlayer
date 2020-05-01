@@ -12,7 +12,7 @@ import sys
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-radio = player()
+radio = Player()
 
 def sigint_handler(sig, frame):
     print('\nstopping radio')
@@ -148,8 +148,8 @@ def api_prev():
     if len(radios) == 0:
         return '', 400
     if len(radios) == 1 or radios[0].name == radio.name:
-        rTemp = radios[len(radios) - 1]
-        radio.change_radio (rTemp.url, rTemp.name)
+        temp = radios[len(radios) - 1]
+        radio.change_radio (temp.url, temp.name)
         return radio.name, 200
     for i in range(1, len(radios)):
         if radios [i].name == radio.name:
@@ -166,7 +166,8 @@ def api_pause():
 @app.route('/api/unpause', methods=['POST'])
 def api_unpause():
     if len(radios) == 0:
-        return '', 200
+        radio.name = None
+        return '', 400
     if radio.name is None:
         radio.change_radio (radios [0].url, radios[0].name)
     else:
