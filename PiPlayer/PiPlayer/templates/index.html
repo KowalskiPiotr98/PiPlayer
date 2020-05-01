@@ -33,8 +33,7 @@
         });
     });
     function play() {
-        $.post('/api/unpause');
-        setName();
+        $.post('/api/unpause', setName());
     }
     function pause() {
         $.post('/api/pause');
