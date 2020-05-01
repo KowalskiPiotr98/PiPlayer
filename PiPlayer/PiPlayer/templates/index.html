@@ -40,12 +40,14 @@
         $.post('/api/pause');
     }
     function prev() {
-        $.post('/api/prev');
-        setName();
+        $.post('/api/prev', function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
     }
     function next() {
-        $.post('/api/next');
-        setName();
+        $.post('/api/next', function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
     }
     function volUp() {
         $.post('/api/volume/up');
