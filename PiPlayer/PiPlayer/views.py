@@ -14,7 +14,7 @@ radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/a
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
 radio = player()
 
-def sigint_handler():
+def sigint_handler(sig, frame):
     radio.pause()
     sys.exit(0)
 
