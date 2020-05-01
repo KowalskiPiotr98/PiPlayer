@@ -29,6 +29,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PiPlayer\player.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PiPlayer\station.py">
       <SubType>Code</SubType>
     </Compile>

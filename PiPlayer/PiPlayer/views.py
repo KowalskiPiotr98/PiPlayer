@@ -6,9 +6,20 @@ from datetime import datetime
 from flask import render_template, request, redirect
 from PiPlayer import app
 from PiPlayer.station import *
+from PiPlayer.player import *
+import signal
+import sys
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
+radio = player()
+
+def sigint_handler(sig, frame):
+    print('\nstopping radio')
+    radio.pause()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 @app.route('/')
 @app.route('/home')
@@ -111,3 +122,76 @@ def new_station_post():
             return redirect('/newStation')
     radios.append(station(name, url))
     return redirect('/stations')
+
+@app.route('/api/name')
+def api_name():
+    if radio.name is None:
+        return 'Radio not selected', 200
+    return radio.name, 200
+
+@app.route('/api/next', methods=['POST'])
+def api_next():
+    if len(radios) == 0:
+        return '', 400
+    if len(radios) == 1 or radios[len(radios) - 1].name == radio.name:
+        radio.change_radio (radios [0].url, radios [0].name)
+        return radio.name, 200
+    for i in range(0,len(radios) - 1):
+        if radios [i].name == radio.name:
+            radio.change_radio (radios [i+1].url, radios [i+1].name)
+            return radio.name, 200
+    radio.change_radio (radios [0].url, radios [0].name)
+    return radio.name, 200
+
+@app.route('/api/prev', methods=['POST'])
+def api_prev():
+    if len(radios) == 0:
+        return '', 400
+    if len(radios) == 1 or radios[0].name == radio.name:
+        rTemp = radios[len(radios) - 1]
+        radio.change_radio (rTemp.url, rTemp.name)
+        return radio.name, 200
+    for i in range(1, len(radios)):
+        if radios [i].name == radio.name:
+            radio.change_radio (radios [i-1].url, radios [i-1].name)
+            return radio.name, 200
+        radio.change_radio(radios [0].url, radios [0].name)
+    return radio.name, 200
+
+@app.route('/api/pause', methods=['POST'])
+def api_pause():
+    radio.pause()
+    return '', 200
+
+@app.route('/api/unpause', methods=['POST'])
+def api_unpause():
+    if len(radios) == 0:
+        return '', 200
+    if radio.name is None:
+        radio.change_radio (radios [0].url, radios[0].name)
+    else:
+        radio.unpause()
+    return '', 200
+
+@app.route('/api/volume/<change>', methods=['POST'])
+def api_volume(change = None):
+    if change is None:
+        return 400
+    if change == 'up':
+        radio.vol_up()
+    elif change == 'down':
+        radio.vol_down()
+    else:
+        return 400
+    return str(radio.volume), 200
+
+@app.route('/api/isplaying')
+def api_is_playing():
+    if radio.playing:
+        return "yes", 200
+    else:
+        return "no", 200
+
+@app.route('/api/getvolume')
+def api_get_volume():
+    return str(radio.volume), 200

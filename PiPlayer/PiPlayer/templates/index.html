@@ -2,8 +2,68 @@
 
 {% block content %}
 
+<h4 class="row">Player</h4>
 <div class="row">
-
+    <div onload="loadName()">
+        <label id="name">Press <i class="fas fa-play"></i> to play</label>
+    </div>
 </div>
+<div class="row">
+    <button class="btn btn-info" onclick="play();"><i class="fas fa-play"></i></button>
+    <button class="btn" onclick="pause();"><i class="fas fa-pause"></i></button>
+    <button class="btn" onclick="prev();"><i class="fas fa-fast-backward"></i></button>
+    <button class="btn" onclick="next();"><i class="fas fa-fast-forward"></i></button>
+    <button class="btn" onclick="volDown();"><i class="fas fa-volume-down"></i></button>
+    <button class="btn" onclick="volUp();"><i class="fas fa-volume-up"></i></button>
+</div>
+<div class="row">
+    <label>Volume: </label>
+    <label id="volume">100</label>
+</div>
+
+<script src="static/scripts/jquery-1.10.2.min.js"></script>
+<script src="static/fontawesome/js/all.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.get('/api/isplaying', function (data) {
+            if (data == 'yes') {
+                setName();
+            }
+            setVolume();
+        });
+    });
+    function play() {
+        $.post('/api/unpause').done(setName());
+    }
+    function pause() {
+        $.post('/api/pause');
+    }
+    function prev() {
+        $.post('/api/prev').done(function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
+    }
+    function next() {
+        $.post('/api/next').done(function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
+    }
+    function volUp() {
+        $.post('/api/volume/up').done(setVolume());
+    }
+    function volDown() {
+        $.post('/api/volume/down').done(setVolume());
+    }
+    function setName() {
+        $.get('/api/name', function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
+    }
+    function setVolume() {
+        $.get('/api/getvolume', function (data) {
+            document.getElementById('volume').innerHTML = data;
+        });
+    }
+</script>
 
 {% endblock %}
