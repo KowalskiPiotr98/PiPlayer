@@ -2,10 +2,23 @@
 
 {% block content %}
 
+<h4 class="row">Player</h4>
 <div class="row">
-    <div class="col-lg-1" onload="loadName()">
-        <label id="name">Press start to play</label>
+    <div onload="loadName()">
+        <label id="name">Press &#x23F5 to play</label>
     </div>
+</div>
+<div class="row">
+    <button class="btn btn-info" onclick="play();">&#x23F5</button>
+    <button class="btn" onclick="pause();">&#x23F8</button>
+    <button class="btn" onclick="prev();">&#x23EE</button>
+    <button class="btn" onclick="next();">&#x23ED</button>
+    <button class="btn" onclick="volUp();">vol+</button>
+    <button class="btn" onclick="volDown();">vol-</button>
+</div>
+<div class="row">
+    <label>Volume: </label>
+    <label id="volume">100</label>
 </div>
 
 <script src="static/scripts/jquery-1.10.2.min.js"></script>
@@ -13,10 +26,43 @@
     $(document).ready(function () {
         $.get('/api/isplaying', function (data) {
             if (data == 'yes') {
-                document.getElementById('name').innerHTML = "dupa";
+                setName();
+                setVolume();
             }
         });
     });
+    function play() {
+        $.post('/api/unpause');
+    }
+    function pause() {
+        $.post('/api/pause');
+    }
+    function prev() {
+        $.post('/api/prev');
+        setName();
+    }
+    function next() {
+        $.post('/api/next');
+        setName();
+    }
+    function volUp() {
+        $.post('/api/volume/up');
+        setVolume();
+    }
+    function volDown() {
+        $.post('/api/volume/down');
+        setVolume();
+    }
+    function setName() {
+        $.get('/api/name', function (data) {
+            document.getElementById('name').innerHTML = data;
+        });
+    }
+    function setVolume() {
+        $.get('/api/getvolume', function (data) {
+            document.getElementById('volume').innerHTML = data;
+        });
+    }
 </script>
 
 {% endblock %}
