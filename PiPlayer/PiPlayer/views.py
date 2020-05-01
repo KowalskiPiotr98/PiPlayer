@@ -10,7 +10,7 @@ from PiPlayer.player import *
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-radio = player()
+#radio = player()
 playing = False
 
 @app.route('/')
@@ -117,48 +117,48 @@ def new_station_post():
 
 @app.route('/api/name')
 def api_name():
-    return radio.name
+    return radio.name, 200
 
 @app.route('/api/next', methods=['POST'])
 def api_next():
     if len(radios) == 0:
-        return 400
+        return '', 400
+    if len(radios) == 1 or radios[len(radios) - 1].name == radio.name:
+        radio.change_radio (radios [0].url, radios [0].name)
     for i in range(0,len(radios) - 1):
         if radios [i].name == radio.name:
             radio.change_radio (radios [i+1].url, radios [i+1].name)
-            return radios [i+1].name, 200
-    if len(radios) > 0:
-        radio.change_radio (radios [0].url, radios [0].name)
     return radio.name, 200
 
 @app.route('/api/prev', methods=['POST'])
 def api_prev():
     if len(radios) == 0:
-        return 400
+        return '', 400
+    if len(radios) == 1 or radios[0].name == radio.name:
+        rTemp = radios[len(radios) - 1]
+        radio.change_radio (rTemp.url, rTemp.name)
     for i in range(1, len(radios)):
         if radios [i].name == radio.name:
             radio.change_radio (radios [i-1].url, radios [i-1].name)
             return radios [i-1].name, 200
-    if len(radios) > 0:
-        radio.change_radio (radios [0].url, radios [0].name)
     return radio.name, 200
 
 @app.route('/api/pause', methods=['POST'])
 def api_pause():
     radio.pause()
     playing = False
-    return 200
+    return '', 200
 
 @app.route('/api/unpause', methods=['POST'])
 def api_unpause():
     if len(radios) == 0:
-        return 200
+        return '', 200
     if radio.name is None:
         radio.change_radio (radios [0].url, radios[0].name)
     else:
         radio.unpause()
     playing = True
-    return 200
+    return '', 200
 
 @app.route('/api/volume/<change>', methods=['POST'])
 def api_volume(change = None):
@@ -170,7 +170,7 @@ def api_volume(change = None):
         radio.vol_down()
     else:
         return 400
-    return radio.volume, 200
+    return str(radio.volume), 200
 
 @app.route('/api/isplaying')
 def api_is_playing():
@@ -181,4 +181,4 @@ def api_is_playing():
 
 @app.route('/api/getvolume')
 def api_get_volume():
-    return radio.volume, 200
+    return str(radio.volume), 200
