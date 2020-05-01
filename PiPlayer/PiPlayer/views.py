@@ -15,6 +15,7 @@ radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/a
 radio = player()
 
 def sigint_handler(sig, frame):
+    print('\nstopping radio')
     radio.pause()
     sys.exit(0)
 
@@ -125,7 +126,7 @@ def new_station_post():
 @app.route('/api/name')
 def api_name():
     if radio.name is None:
-        return '', 404
+        return 'Radio not selected', 200
     return radio.name, 200
 
 @app.route('/api/next', methods=['POST'])

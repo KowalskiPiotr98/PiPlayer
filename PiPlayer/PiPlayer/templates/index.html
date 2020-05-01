@@ -28,12 +28,12 @@
         $.get('/api/isplaying', function (data) {
             if (data == 'yes') {
                 setName();
-                setVolume();
             }
+            setVolume();
         });
     });
     function play() {
-        $.post('/api/unpause', setName());
+        $.post('/api/unpause').done(setName());
     }
     function pause() {
         $.post('/api/pause');
