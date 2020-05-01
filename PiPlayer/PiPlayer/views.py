@@ -124,9 +124,11 @@ def api_next():
         return '', 400
     if len(radios) == 1 or radios[len(radios) - 1].name == radio.name:
         radio.change_radio (radios [0].url, radios [0].name)
+        return radio.name, 200
     for i in range(0,len(radios) - 1):
         if radios [i].name == radio.name:
             radio.change_radio (radios [i+1].url, radios [i+1].name)
+            break
     return radio.name, 200
 
 @app.route('/api/prev', methods=['POST'])
@@ -136,10 +138,11 @@ def api_prev():
     if len(radios) == 1 or radios[0].name == radio.name:
         rTemp = radios[len(radios) - 1]
         radio.change_radio (rTemp.url, rTemp.name)
+        return radio.name, 200
     for i in range(1, len(radios)):
         if radios [i].name == radio.name:
             radio.change_radio (radios [i-1].url, radios [i-1].name)
-            return radios [i-1].name, 200
+            break
     return radio.name, 200
 
 @app.route('/api/pause', methods=['POST'])
