@@ -7,6 +7,7 @@ class player(object):
         self._port = port
         self.client = mpd.MPDClient()
         self.client.connect(host, port)
+        self.client.stop()
         self.volume = 100
         self.playing = False
         self.client.setvol(self.volume)
