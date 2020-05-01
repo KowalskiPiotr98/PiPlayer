@@ -12,6 +12,7 @@ class player(object):
     def change_radio(self, url = None, name = None):
         if url is None or name is None:
             return
+        self.playing = True
         self.name = name
         self.client.clear()
         self.client.add(url)
