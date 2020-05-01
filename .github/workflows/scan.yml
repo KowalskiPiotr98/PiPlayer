@@ -13,14 +13,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - shell: bash
-      env: 
-        token: ${{ secrets.sonar_key }}
-        pk: ${{ secrets.sonar_projectKey }}
-        domain: ${{ secrets.sonar_domain }}
     - uses: actions/checkout@v2
     - uses: warchant/setup-sonar-scanner@v1
       with:
         version: '4.3.0.2102'
     - name: scan
+      shell: bash
+      env: 
+        token: ${{ secrets.sonar_key }}
+        pk: ${{ secrets.sonar_projectKey }}
+        domain: ${{ secrets.sonar_domain }}
       run: sonar-scanner -Dsonar.projectKey="$pk" -Dsonar.sources=. -Dsonar.host.url="$domain" -Dsonar.login="$token" -Dsonar.exclusions=PiPlayer/PiPlayer/static/**/*

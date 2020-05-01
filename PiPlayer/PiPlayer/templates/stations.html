@@ -1,0 +1,56 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<style type="text/css">
+    form {
+        display: inline;
+        margin: 0px;
+        padding: 0px;
+    }
+</style>
+
+<p>
+    <a class="btn btn-info" href="/newStation">Add new</a>
+</p>
+
+<table class="table">
+    <caption>Available radio stations</caption>
+    <thead>
+        <tr>
+            <th scope="col">
+                Name
+            </th>
+            <th scope="col">
+                Url
+            </th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+{% for s in stations %}
+        <tr>
+            <td>
+                {{ s.name }}
+            </td>
+            <td>
+                {{ s.url }}
+            </td>
+            <td>
+                <a class="btn btn-link" href="/edit/{{ s.name }}">Edit</a> |
+                <form action="radioUp" method="post">
+                    <input type="hidden" name="name" value="{{ s.name }}"/>
+                    <input class="btn-link" type="submit" value="Up"/>
+                </form> |
+                <form action="radioDown" method="post">
+                    <input type="hidden" name="name" value="{{ s.name }}"/>
+                    <input class="btn-link" type="submit" value="Down"/>
+                </form>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

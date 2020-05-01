@@ -29,6 +29,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PiPlayer\player.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PiPlayer\station.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="PiPlayer\__init__.py" />
     <Compile Include="PiPlayer\views.py" />
@@ -42,6 +48,9 @@
     <Folder Include="PiPlayer\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PiPlayer\templates\new_station.html" />
+    <Content Include="PiPlayer\templates\stations.html" />
+    <Content Include="PiPlayer\templates\edit.html" />
     <Content Include="requirements.txt" />
     <Content Include="PiPlayer\static\content\bootstrap.css" />
     <Content Include="PiPlayer\static\content\bootstrap.min.css" />
@@ -65,8 +74,6 @@
     <Content Include="PiPlayer\static\scripts\respond.js" />
     <Content Include="PiPlayer\static\scripts\respond.min.js" />
     <Content Include="PiPlayer\static\scripts\_references.js" />
-    <Content Include="PiPlayer\templates\about.html" />
-    <Content Include="PiPlayer\templates\contact.html" />
     <Content Include="PiPlayer\templates\index.html" />
     <Content Include="PiPlayer\templates\layout.html" />
   </ItemGroup>
