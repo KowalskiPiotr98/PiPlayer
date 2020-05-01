@@ -6,6 +6,7 @@ class player(object):
         self.client = mpd.MPDClient()
         self.client.connect(host, port)
         self.volume = 100
+        self.playing = False
         self.client.setvol(self.volume)
 
     def change_radio(self, url = None, name = None):
@@ -30,6 +31,8 @@ class player(object):
 
     def pause(self):
         self.client.pause(1)
+        self.playing = False
 
     def unpause(self):
         self.client.pause(0)
+        self.playing = True

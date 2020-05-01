@@ -11,7 +11,6 @@ from PiPlayer.player import *
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
 radio = player()
-playing = False
 
 @app.route('/')
 @app.route('/home')
@@ -146,7 +145,6 @@ def api_prev():
 @app.route('/api/pause', methods=['POST'])
 def api_pause():
     radio.pause()
-    playing = False
     return '', 200
 
 @app.route('/api/unpause', methods=['POST'])
@@ -157,7 +155,6 @@ def api_unpause():
         radio.change_radio (radios [0].url, radios[0].name)
     else:
         radio.unpause()
-    playing = True
     return '', 200
 
 @app.route('/api/volume/<change>', methods=['POST'])
@@ -174,7 +171,7 @@ def api_volume(change = None):
 
 @app.route('/api/isplaying')
 def api_is_playing():
-    if playing:
+    if radio.playing:
         return "yes", 200
     else:
         return "no", 200
