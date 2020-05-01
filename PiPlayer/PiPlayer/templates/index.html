@@ -39,22 +39,20 @@
         $.post('/api/pause');
     }
     function prev() {
-        $.post('/api/prev', function (data) {
+        $.post('/api/prev').done(function (data) {
             document.getElementById('name').innerHTML = data;
         });
     }
     function next() {
-        $.post('/api/next', function (data) {
+        $.post('/api/next').done(function (data) {
             document.getElementById('name').innerHTML = data;
         });
     }
     function volUp() {
-        $.post('/api/volume/up');
-        setVolume();
+        $.post('/api/volume/up').done(setVolume());
     }
     function volDown() {
-        $.post('/api/volume/down');
-        setVolume();
+        $.post('/api/volume/down').done(setVolume());
     }
     function setName() {
         $.get('/api/name', function (data) {
