@@ -2,14 +2,16 @@ import mpd
 
 class player(object):
     def __init__(self, host = 'localhost', port = 6600):
+        self.name = None
         self.client = mpd.MPDClient()
         self.client.connect(host, port)
         self.volume = 100
         self.client.setvol(self.volume)
 
-    def change_radio(self, url = None):
-        if url is None:
+    def change_radio(self, url = None, name = None):
+        if url is None or name is None:
             return
+        self.name = name
         self.client.clear()
         self.client.add(url)
         self.client.play()

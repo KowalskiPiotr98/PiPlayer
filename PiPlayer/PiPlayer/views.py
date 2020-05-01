@@ -10,7 +10,8 @@ from PiPlayer.player import *
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-player = player()
+#radio = player()
+playing = False
 
 @app.route('/')
 @app.route('/home')
@@ -113,3 +114,54 @@ def new_station_post():
             return redirect('/newStation')
     radios.append(station(name, url))
     return redirect('/stations')
+
+@app.route('/api/name')
+def api_name():
+    return radio.name
+
+@app.route('/api/next', methods=['POST'])
+def api_next():
+    for i in range(0,len(radios) - 1):
+        if radios [i].name == radio.name:
+            radio.change_radio (radios [i+1].url, radios [i+1].name)
+            return radios [i+1].name, 200
+    return 404
+
+@app.route('/api/prev', methods=['POST'])
+def api_prev():
+    for i in range(1, len(radios)):
+        if radios [i].name == radio.name:
+            radio.change_radio (radios [i-1].url, radios [i-1].name)
+            return radios [i-1].name, 200
+    return 404
+
+@app.route('/api/pause', methods=['POST'])
+def api_pause():
+    radio.pause()
+    playing = False
+    return 200
+
+@app.route('/api/unpause', methods=['POST'])
+def api_unpause():
+    radio.unpause()
+    playing = True
+    return 200
+
+@app.route('/api/volume/<change>', methods=['POST'])
+def api_volume(change = None):
+    if change is None:
+        return 400
+    if change == 'up':
+        radio.vol_up()
+    elif change == 'down':
+        radio.vol_down()
+    else:
+        return 400
+    return 200
+
+@app.route('/api/isplaying')
+def api_is_playing():
+    if playing:
+        return "yes", 200
+    else:
+        return "no", 200
