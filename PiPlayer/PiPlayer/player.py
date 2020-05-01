@@ -1,11 +1,33 @@
 import mpd
 
-test = mpd.MPDClient();
-#test.connect("localhost",6600)
-#test.clear()
-test.add("http://example.com")
-test.play()
-
 class player(object):
-    def __init__(self):
-        self.dupa = 1
+    def __init__(self, host = 'localhost', port = 6600):
+        self.client = mpd.MPDClient()
+        self.client.connect(host, port)
+        self.volume = 100
+        self.client.setvol(volume)
+
+    def change_radio(self, url = None):
+        if url is None:
+            return
+        self.client.clear()
+        self.client.add(url)
+        self.client.play()
+
+    def vol_up(self):
+        if self.volume == 100:
+            return
+        self.volume += 25
+        self.client.setvol(self.volume)
+
+    def vol_down(self):
+        if self.volume == 0:
+            return
+        self.volume -= 25
+        self.client.setvol(self.volume)
+
+    def pause(self):
+        self.client.pause(1)
+
+    def unpause(self):
+        self.client.pause(0)
