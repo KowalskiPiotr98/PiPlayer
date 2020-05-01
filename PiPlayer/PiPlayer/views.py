@@ -7,10 +7,18 @@ from flask import render_template, request, redirect
 from PiPlayer import app
 from PiPlayer.station import *
 from PiPlayer.player import *
+import signal
+import sys
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
 radio = player()
+
+def sigint_handler():
+    radio.pause()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 @app.route('/')
 @app.route('/home')
@@ -116,6 +124,8 @@ def new_station_post():
 
 @app.route('/api/name')
 def api_name():
+    if radio.name is None:
+        return '', 404
     return radio.name, 200
 
 @app.route('/api/next', methods=['POST'])
