@@ -10,7 +10,7 @@ from PiPlayer.player import *
 
 radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
           station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-#radio = player()
+radio = player()
 playing = False
 
 @app.route('/')
