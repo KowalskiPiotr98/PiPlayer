@@ -5,7 +5,7 @@ class player(object):
         self.client = mpd.MPDClient()
         self.client.connect(host, port)
         self.volume = 100
-        self.client.setvol(volume)
+        self.client.setvol(self.volume)
 
     def change_radio(self, url = None):
         if url is None:
