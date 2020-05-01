@@ -167,6 +167,7 @@ def api_pause():
 def api_unpause():
     if len(radios) == 0:
         radio.name = None
+        radio.pause()
         return '', 400
     if radio.name is None:
         radio.change_radio (radios [0].url, radios[0].name)
