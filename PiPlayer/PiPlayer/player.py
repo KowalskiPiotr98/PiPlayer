@@ -21,9 +21,10 @@ class Player(object):
         if url is None or name is None:
             return
         with mpc_mutex:
-            self.client.connect(self._host, self._port)
             self.playing = True
             self.name = name
+            self.client.connect(self._host, self._port)
+            self.client.stop()
             self.client.clear()
             self.client.add(url)
             self.client.play()
