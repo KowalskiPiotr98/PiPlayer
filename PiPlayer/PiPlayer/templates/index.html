@@ -33,8 +33,8 @@
         });
     });
     function play() {
-        $.post('/api/unpause').done(setName()).fail(function () {
-            document.getElementById('name').innerHTML = 'No stations available';
+        $.post('/api/unpause').done(function (data) {
+            document.getElementById('name').innerHTML = data;
         });
     }
     function pause() {
@@ -51,10 +51,14 @@
         });
     }
     function volUp() {
-        $.post('/api/volume/up').done(setVolume());
+        $.post('/api/volume/up').done(function (data) {
+            document.getElementById('volume').innerHTML = data;
+        });
     }
     function volDown() {
-        $.post('/api/volume/down').done(setVolume());
+        $.post('/api/volume/down').done(function (data) {
+            document.getElementById('volume').innerHTML = data;
+        });
     }
     function setName() {
         $.get('/api/name', function (data) {

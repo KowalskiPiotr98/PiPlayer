@@ -168,12 +168,12 @@ def api_unpause():
     if len(radios) == 0:
         radio.set_name(None)
         radio.pause()
-        return '', 400
+        return 'No stations available', 200
     if radio.get_name() is None:
         radio.change_radio (radios [0].url, radios[0].name)
     else:
         radio.unpause()
-    return '', 200
+    return radio.get_name(), 200
 
 @app.route('/api/volume/<change>', methods=['POST'])
 def api_volume(change = None):
