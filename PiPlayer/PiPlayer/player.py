@@ -31,7 +31,7 @@ class Player(object):
             self.client.disconnect()
 
     def vol_up(self):
-        if self.volume == 100:
+        if self._volume == 100:
             return
         with mpc_mutex:
             self._volume += 25
@@ -40,7 +40,7 @@ class Player(object):
             self.client.disconnect()
 
     def vol_down(self):
-        if self.volume == 0:
+        if self._volume == 0:
             return
         with mpc_mutex:
             self._volume -= 25
