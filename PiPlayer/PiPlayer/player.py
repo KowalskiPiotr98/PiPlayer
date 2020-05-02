@@ -51,13 +51,13 @@ class Player(object):
     def pause(self):
         with mpc_mutex:
             self.client.connect(self._host, self._port)
-            self.client.pause(1)
+            self.client.stop()
             self.client.disconnect()
             self.playing = False
 
     def unpause(self):
         with mpc_mutex:
             self.client.connect(self._host, self._port)
-            self.client.pause(0)
+            self.client.play()
             self.client.disconnect()
             self.playing = True
