@@ -125,38 +125,38 @@ def new_station_post():
 
 @app.route('/api/name')
 def api_name():
-    if radio.name is None:
+    if radio.get_name() is None:
         return 'Radio not selected', 200
-    return radio.name, 200
+    return radio.get_name(), 200
 
 @app.route('/api/next', methods=['POST'])
 def api_next():
     if len(radios) == 0:
         return '', 400
-    if len(radios) == 1 or radios[len(radios) - 1].name == radio.name:
+    if len(radios) == 1 or radios[len(radios) - 1].name == radio.get_name():
         radio.change_radio (radios [0].url, radios [0].name)
-        return radio.name, 200
+        return radio.get_name(), 200
     for i in range(0,len(radios) - 1):
-        if radios [i].name == radio.name:
+        if radios [i].name == radio.get_name():
             radio.change_radio (radios [i+1].url, radios [i+1].name)
-            return radio.name, 200
+            return radio.get_name(), 200
     radio.change_radio (radios [0].url, radios [0].name)
-    return radio.name, 200
+    return radio.get_name(), 200
 
 @app.route('/api/prev', methods=['POST'])
 def api_prev():
     if len(radios) == 0:
         return '', 400
-    if len(radios) == 1 or radios[0].name == radio.name:
+    if len(radios) == 1 or radios[0].name == radio.get_name():
         temp = radios[len(radios) - 1]
         radio.change_radio (temp.url, temp.name)
-        return radio.name, 200
+        return radio.get_name(), 200
     for i in range(1, len(radios)):
-        if radios [i].name == radio.name:
+        if radios [i].name == radio.get_name():
             radio.change_radio (radios [i-1].url, radios [i-1].name)
-            return radio.name, 200
+            return radio.get_name(), 200
         radio.change_radio(radios [0].url, radios [0].name)
-    return radio.name, 200
+    return radio.get_name(), 200
 
 @app.route('/api/pause', methods=['POST'])
 def api_pause():
@@ -166,13 +166,14 @@ def api_pause():
 @app.route('/api/unpause', methods=['POST'])
 def api_unpause():
     if len(radios) == 0:
-        radio.name = None
-        return '', 400
-    if radio.name is None:
+        radio.set_name(None)
+        radio.pause()
+        return 'No stations available', 200
+    if radio.get_name() is None:
         radio.change_radio (radios [0].url, radios[0].name)
     else:
         radio.unpause()
-    return '', 200
+    return radio.get_name(), 200
 
 @app.route('/api/volume/<change>', methods=['POST'])
 def api_volume(change = None):
@@ -184,7 +185,7 @@ def api_volume(change = None):
         radio.vol_down()
     else:
         return 400
-    return str(radio.volume), 200
+    return str(radio.get_volume()), 200
 
 @app.route('/api/isplaying')
 def api_is_playing():
@@ -195,4 +196,4 @@ def api_is_playing():
 
 @app.route('/api/getvolume')
 def api_get_volume():
-    return str(radio.volume), 200
+    return str(radio.get_volume()), 200
