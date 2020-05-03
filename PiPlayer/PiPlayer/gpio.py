@@ -20,15 +20,30 @@ _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 
 def gpio_thread(arg):
     while _state != -1:
-        _d1.set_value(1)
         bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
         bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
         events = bulk_event.event_wait(sec = 2)
         if events is not None:
-            for i in events:
-                print(i)
+            offset = events[0].offset()
+            if _state == 0:
+                if offset == 12:
+                    _d1.set_value(1)
+                    if radio.get_is_playing():
+                        radio.pause()
+                        _d2.set_value(1)
+                    else:
+                        radio.unpause()
+                        _d2.set_value(0)
+                elif offset == 13:
+                    _state = 1
+                    _d1.set_value(0)
+                    _d2.set_value(0)
+                    _d3.set_value(1)
+                    continue
+                elif offset == 14:
+                    _state = 2
+                    continue
         bulk_event.release()
-        _d1.set_value(0)
 
 _thread = Thread(target = gpio_thread, args = ('',))
 _thread.start()
@@ -36,7 +51,11 @@ _thread.start()
 def thread_join():
     _state = -1
     _thread.join()
+    _d1.set_value(0)
     _d1.release()
+    _d2.set_value(0)
     _d2.release()
+    _d3.set_value(0)
     _d3.release()
+    _d4.set_value(0)
     _d4.release()
