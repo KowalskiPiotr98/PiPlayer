@@ -5,13 +5,13 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request, redirect
 from PiPlayer import app
-from PiPlayer.station import *
-from PiPlayer.player import *
+from PiPlayer.station import Station
+from PiPlayer.player import Player
 import signal
 import sys
 
-radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
-          station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
+radios = [Station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
+          Station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
 radio = Player()
 
 def sigint_handler(sig, frame):
@@ -120,7 +120,7 @@ def new_station_post():
     for i in radios:
         if i.name == name:
             return redirect('/newStation')
-    radios.append(station(name, url))
+    radios.append(Station(name, url))
     return redirect('/stations')
 
 @app.route('/api/name')
