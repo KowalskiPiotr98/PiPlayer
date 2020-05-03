@@ -142,6 +142,7 @@ def _handle_playback(offset):
         return
     elif offset == B3_OFFSET:
         _state = 2
+        _set_volume_leds()
         return
 
 _thread = Thread(target = gpio_thread, args = ('',))
