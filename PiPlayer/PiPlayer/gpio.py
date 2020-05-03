@@ -42,7 +42,44 @@ def gpio_thread(arg):
                 _handle_playback(offset)
             elif _state == 1:
                 _handle_selection(offset)
+            elif _state == 2:
+                _handle_volume(offset)
         bulk_event.release()
+
+def _handle_volume(offset):
+    global _state
+    _set_volume_leds()
+    if offset == B1_OFFSET:
+        radio.vol_down()
+        _set_volume_leds()
+    elif offset == B2_OFFSET:
+        radio.vol_up()
+        _set_volume_leds()
+    elif offset == B3_OFFSET:
+        _d1.set_value(1)
+        if radio.get_is_playing():
+            _d2.set_value(0)
+        else:
+            _d2.set_value(1)
+        _d3.set_value(0)
+        _d4.set_value(0)
+        _state = 0
+    
+    
+def _set_volume_leds():
+    _d1.set_value(0)
+    _d2.set_value(0)
+    _d3.set_value(0)
+    _d4.set_value(0)
+    vol = radio.get_volume()
+    if vol > 0
+        _d1.set_value(1)
+    if vol > 25
+        _d2.set_value(1)
+    if vol > 50:
+        _d3.set_value(1)
+    if vol > 75:
+        _d4.set_value(1)
 
 def _handle_selection(offset):
     global _state
