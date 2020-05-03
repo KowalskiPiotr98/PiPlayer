@@ -70,8 +70,6 @@ class Player(object):
     def get_name(self):
         with mpc_mutex:
             temp = self._name
-        if temp is None:
-            temp = ''
         return temp
 
     def set_name(self, name):
