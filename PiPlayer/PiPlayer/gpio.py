@@ -127,7 +127,6 @@ def _handle_playback(offset):
         _d1.set_value(1)
         if len(radios) == 0:
             _d2.set_value(1)
-            return
         elif radio.get_is_playing():
             radio.pause()
             _d2.set_value(1)
@@ -143,11 +142,9 @@ def _handle_playback(offset):
         _d1.set_value(0)
         _d2.set_value(0)
         _d3.set_value(1)
-        return
     elif offset == B3_OFFSET:
         _state = 2
         _set_volume_leds()
-        return
 
 _thread = Thread(target = gpio_thread, args = ('',))
 _thread.start()
