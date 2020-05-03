@@ -9,12 +9,16 @@ _b2 = _chip.get_line(13)
 _b3 = _chip.get_line(14)
 _d1 = _chip.get_line(24)
 _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+_d1.set_value(1)
 _d2 = _chip.get_line(25)
 _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+_d2.set_value(1)
 _d3 = _chip.get_line(26)
 _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+_d3.set_value(0)
 _d4 = _chip.get_line(27)
 _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+_d4.set_value(0)
 
 _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 
