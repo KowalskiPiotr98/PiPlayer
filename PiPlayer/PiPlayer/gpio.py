@@ -1,5 +1,5 @@
-from player import Player, radio
-from station import Station, radios
+from PiPlayer.player import Player, radio
+from PiPlayer.station import Station, radios
 from threading import Thread
 import gpiod
 
