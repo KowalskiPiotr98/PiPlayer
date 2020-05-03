@@ -21,10 +21,10 @@ _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 def gpio_thread(arg):
     while _state != -1:
         _d1.set_value(1)
-        bulk_event = gpiod.line_bulk([_b1, _b2, _b3])
-        bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_BOTH_EDGES)
+        bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
+        bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
         events = bulk_event.event_wait(sec = 2)
-        if events.size > 0:
+        if events is not None:
             for i in events:
                 print(i)
         bulk_event.release()
