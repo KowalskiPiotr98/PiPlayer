@@ -19,6 +19,7 @@ _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
 _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 
 def gpio_thread(arg):
+    global _state
     while _state != -1:
         bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
         bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
@@ -49,6 +50,7 @@ _thread = Thread(target = gpio_thread, args = ('',))
 _thread.start()
 
 def thread_join():
+    global _state
     _state = -1
     _thread.join()
     _d1.set_value(0)
