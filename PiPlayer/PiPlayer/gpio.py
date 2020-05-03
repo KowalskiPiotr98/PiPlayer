@@ -2,6 +2,7 @@ from PiPlayer.player import Player, radio
 from PiPlayer.station import Station, radios, radios_mutex
 from threading import Thread
 import gpiod
+from time import sleep
 
 B1_OFFSET=12
 B2_OFFSET=13
@@ -37,13 +38,16 @@ def gpio_thread(arg):
         bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
         events = bulk_event.event_wait(sec = 2)
         if events is not None:
-            offset = events[0].offset()
-            if _state == 0:
-                _handle_playback(offset)
-            elif _state == 1:
-                _handle_selection(offset)
-            elif _state == 2:
-                _handle_volume(offset)
+            button = events[0]
+            sleep(0.3)
+            if button.get_value() == 1:
+                offset = button.offset()
+                if _state == 0:
+                    _handle_playback(offset)
+                elif _state == 1:
+                    _handle_selection(offset)
+                elif _state == 2:
+                    _handle_volume(offset)
         bulk_event.release()
 
 def _handle_volume(offset):
