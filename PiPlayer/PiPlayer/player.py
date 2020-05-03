@@ -12,6 +12,7 @@ class Player(object):
             self._name = None
             self.client.connect(host, port)
             self.client.stop()
+            self.client.clear()
             self._volume = 100
             self._playing = False
             self.client.setvol(self._volume)

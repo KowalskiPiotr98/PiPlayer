@@ -33,9 +33,13 @@ def gpio_thread(arg):
             if _state == 0:
                 if offset == 12:
                     _d1.set_value(1)
-                    if radio.get_is_playing():
+                    if len(radios) == 0:
+                        continue
+                    elif radio.get_is_playing():
                         radio.pause()
                         _d2.set_value(1)
+                    elif radio.get_name() is None:
+                        radio.change_radio(radios[0].url, radios[0].name)
                     else:
                         radio.unpause()
                         _d2.set_value(0)
