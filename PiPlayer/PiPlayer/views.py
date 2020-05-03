@@ -161,7 +161,7 @@ def api_prev():
             if radios [i].name == radio.get_name():
                 radio.change_radio (radios [i-1].url, radios [i-1].name)
                 return radio.get_name(), 200
-            radio.change_radio(radios [0].url, radios [0].name)
+        radio.change_radio(radios [0].url, radios [0].name)
     return radio.get_name(), 200
 
 @app.route('/api/pause', methods=['POST'])
