@@ -13,7 +13,7 @@ class Player(object):
             self.client.connect(host, port)
             self.client.stop()
             self._volume = 100
-            self.playing = False
+            self._playing = False
             self.client.setvol(self._volume)
             self.client.disconnect()
 
@@ -21,7 +21,7 @@ class Player(object):
         if url is None or name is None:
             return
         with mpc_mutex:
-            self.playing = True
+            self._playing = True
             self._name = name
             self.client.connect(self._host, self._port)
             self.client.stop()
@@ -53,14 +53,14 @@ class Player(object):
             self.client.connect(self._host, self._port)
             self.client.stop()
             self.client.disconnect()
-            self.playing = False
+            self._playing = False
 
     def unpause(self):
         with mpc_mutex:
             self.client.connect(self._host, self._port)
             self.client.play()
             self.client.disconnect()
-            self.playing = True
+            self._playing = True
 
     def get_volume(self):
         with mpc_mutex:
@@ -77,5 +77,9 @@ class Player(object):
     def set_name(self, name):
         with mpc_mutex:
             self._name = name
+    
+    def get_is_playing(self):
+        with mpc_mutex:
+            return self._playing
 
 radio = Player()

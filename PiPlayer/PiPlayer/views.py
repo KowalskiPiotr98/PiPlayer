@@ -195,7 +195,7 @@ def api_volume(change = None):
 
 @app.route('/api/isplaying')
 def api_is_playing():
-    if radio.playing:
+    if radio.get_is_playing():
         return "yes", 200
     else:
         return "no", 200
