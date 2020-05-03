@@ -1,3 +1,5 @@
 obj
 .scannerwork
 PiPlayer/__pycache__
+__pycache__
+.vscode

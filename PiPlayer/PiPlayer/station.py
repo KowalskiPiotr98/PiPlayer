@@ -1,5 +1,11 @@
-class station(object):
+import threading
+
+class Station(object):
     def __init__(self, name, url):
         self.url = url
         self.name = name
 
+radios_mutex = threading.Lock()
+
+radios = [Station ("Trójka","http://mp3.polskieradio.pl:8904/"),
+          Station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]

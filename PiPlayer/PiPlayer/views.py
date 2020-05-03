@@ -5,18 +5,16 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request, redirect
 from PiPlayer import app
-from PiPlayer.station import *
-from PiPlayer.player import *
+from PiPlayer.station import Station, radios, radios_mutex
+from PiPlayer.player import Player, radio
+from PiPlayer.gpio import thread_join
 import signal
 import sys
-
-radios = [station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
-          station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-radio = Player()
 
 def sigint_handler(sig, frame):
     print('\nstopping radio')
     radio.pause()
+    thread_join()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, sigint_handler)
@@ -45,13 +43,14 @@ def radio_up():
     name = request.form.get('name')
     if name is None:
         return redirect('/stations')
-    for i in range(0,len(radios)):
-        if radios [i].name == name:
-            if i > 0:
-                temp = radios [i]
-                radios [i] = radios [i-1]
-                radios [i - 1] = temp
-            break
+    with radios_mutex:
+        for i in range(0,len(radios)):
+            if radios [i].name == name:
+                if i > 0:
+                    temp = radios [i]
+                    radios [i] = radios [i-1]
+                    radios [i - 1] = temp
+                break
     return redirect('/stations')
 
 @app.route('/radioDown', methods=['POST'])
@@ -59,37 +58,40 @@ def radio_down():
     name = request.form.get('name')
     if name is None:
         return redirect('/stations')
-    for i in range(0,len(radios)):
-        if radios [i].name == name:
-            if i < len(radios) - 1:
-                temp = radios [i]
-                radios [i] = radios [i + 1]
-                radios [i + 1] = temp
-            break
+    with radios_mutex:
+        for i in range(0,len(radios)):
+            if radios [i].name == name:
+                if i < len(radios) - 1:
+                    temp = radios [i]
+                    radios [i] = radios [i + 1]
+                    radios [i + 1] = temp
+                break
     return redirect('/stations')
 
 @app.route('/edit/<name>')
 def edit(name):
     if name is None:
         return redirect('/stations')
-    for i in radios:
-        if name == i.name:
-            return render_template(
-                'edit.html',
-                title="Edit",
-                year=datetime.now().year,
-                station = i,
-                )
+    with radios_mutex:
+        for i in radios:
+            if name == i.name:
+                return render_template(
+                    'edit.html',
+                    title="Edit",
+                    year=datetime.now().year,
+                    station = i,
+                    )
     return redirect('/stations')
 
 @app.route('/edit/<name>', methods=['POST'])
 def edit_post(name):
     if name is None:
         return redirect('/stations')
-    for i in radios:
-        if i.name == name:
-            i.url = request.form.get('url')
-            break
+    with radios_mutex:
+        for i in radios:
+            if i.name == name:
+                i.url = request.form.get('url')
+                break
     return redirect('/stations')
 
 @app.route('/delete', methods=['POST'])
@@ -97,10 +99,11 @@ def edit_delete():
     name = request.form.get('name')
     if name is None:
         return redirect('/stations')
-    for i in radios:
-        if i.name == name:
-            radios.remove(i)
-            break
+    with radios_mutex:
+        for i in radios:
+            if i.name == name:
+                radios.remove(i)
+                break
     return redirect('/stations')
 
 @app.route('/newStation')
@@ -117,10 +120,11 @@ def new_station_post():
     url = request.form.get('url')
     if name is None or url is None or name == '' or url == '':
         return redirect('/newStation')
-    for i in radios:
-        if i.name == name:
-            return redirect('/newStation')
-    radios.append(station(name, url))
+    with radios_mutex:
+        for i in radios:
+            if i.name == name:
+                return redirect('/newStation')
+        radios.append(Station(name, url))
     return redirect('/stations')
 
 @app.route('/api/name')
@@ -133,28 +137,30 @@ def api_name():
 def api_next():
     if len(radios) == 0:
         return '', 400
-    if len(radios) == 1 or radios[len(radios) - 1].name == radio.get_name():
-        radio.change_radio (radios [0].url, radios [0].name)
-        return radio.get_name(), 200
-    for i in range(0,len(radios) - 1):
-        if radios [i].name == radio.get_name():
-            radio.change_radio (radios [i+1].url, radios [i+1].name)
+    with radios_mutex:
+        if len(radios) == 1 or radios[len(radios) - 1].name == radio.get_name():
+            radio.change_radio (radios [0].url, radios [0].name)
             return radio.get_name(), 200
-    radio.change_radio (radios [0].url, radios [0].name)
+        for i in range(0,len(radios) - 1):
+            if radios [i].name == radio.get_name():
+                radio.change_radio (radios [i+1].url, radios [i+1].name)
+                return radio.get_name(), 200
+        radio.change_radio (radios [0].url, radios [0].name)
     return radio.get_name(), 200
 
 @app.route('/api/prev', methods=['POST'])
 def api_prev():
     if len(radios) == 0:
         return '', 400
-    if len(radios) == 1 or radios[0].name == radio.get_name():
-        temp = radios[len(radios) - 1]
-        radio.change_radio (temp.url, temp.name)
-        return radio.get_name(), 200
-    for i in range(1, len(radios)):
-        if radios [i].name == radio.get_name():
-            radio.change_radio (radios [i-1].url, radios [i-1].name)
+    with radios_mutex:
+        if len(radios) == 1 or radios[0].name == radio.get_name():
+            temp = radios[len(radios) - 1]
+            radio.change_radio (temp.url, temp.name)
             return radio.get_name(), 200
+        for i in range(1, len(radios)):
+            if radios [i].name == radio.get_name():
+                radio.change_radio (radios [i-1].url, radios [i-1].name)
+                return radio.get_name(), 200
         radio.change_radio(radios [0].url, radios [0].name)
     return radio.get_name(), 200
 
@@ -189,7 +195,7 @@ def api_volume(change = None):
 
 @app.route('/api/isplaying')
 def api_is_playing():
-    if radio.playing:
+    if radio.get_is_playing():
         return "yes", 200
     else:
         return "no", 200
