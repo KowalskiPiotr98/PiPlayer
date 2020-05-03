@@ -72,9 +72,9 @@ def _set_volume_leds():
     _d3.set_value(0)
     _d4.set_value(0)
     vol = radio.get_volume()
-    if vol > 0
+    if vol > 0:
         _d1.set_value(1)
-    if vol > 25
+    if vol > 25:
         _d2.set_value(1)
     if vol > 50:
         _d3.set_value(1)
