@@ -7,5 +7,5 @@ class Station(object):
 
 radios_mutex = threading.Lock()
 
-radios = [Station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
+radios = [Station ("Trójka","http://mp3.polskieradio.pl:8904/"),
           Station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
