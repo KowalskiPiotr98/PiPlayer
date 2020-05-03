@@ -5,18 +5,16 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request, redirect
 from PiPlayer import app
-from PiPlayer.station import Station
-from PiPlayer.player import Player
+from PiPlayer.station import Station, radios
+from PiPlayer.player import Player, radio
+from PiPlayer.gpio import thread_join
 import signal
 import sys
-
-radios = [Station ("BBC one", "https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnws/bbc_radio_one.mpd"),
-          Station ("Złote przeboje", "http://stream10.radioagora.pl/zp_waw_128.mp3")]
-radio = Player()
 
 def sigint_handler(sig, frame):
     print('\nstopping radio')
     radio.pause()
+    thread_join()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, sigint_handler)

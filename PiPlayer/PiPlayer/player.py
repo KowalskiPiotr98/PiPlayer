@@ -77,3 +77,5 @@ class Player(object):
     def set_name(self, name):
         with mpc_mutex:
             self._name = name
+
+radio = Player()
