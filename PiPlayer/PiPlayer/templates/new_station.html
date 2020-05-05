@@ -5,7 +5,9 @@
 <h1 class="row">
     Add new station
 </h1>
-
+<p>
+    {{ error }}
+</p>
 <div class="row">
     <form action="/newStation" method="post">
         <div class="form-group">
@@ -14,7 +16,7 @@
         </div>
         <div class="form-group">
             <label for="url">Url</label>
-            <input class="form-control" type="url" placeholder="Station stream URL" name="url" id="url"/>
+            <input class="form-control" type="url" placeholder="Station stream URL (HTTP only)" name="url" id="url" data-toggle="tooltip" title="Due to technical limitations of emulation HTTPS is not supported."/>
         </div>
         <div class="form-group">
             <input type="submit" value="Add" class="btn btn-primary"/>
