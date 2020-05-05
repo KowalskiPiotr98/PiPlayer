@@ -3,6 +3,7 @@ from PiPlayer.station import Station, radios, radios_mutex
 from threading import Thread
 import gpiod
 from time import sleep
+from sys import argv, exit
 
 B1_OFFSET=12
 B2_OFFSET=13
@@ -11,25 +12,52 @@ D1_OFFSET=24
 D2_OFFSET=25
 D3_OFFSET=26
 D4_OFFSET=27
+CHIP_NAME = '10008000.gpio'
+SKIP_GPIO = False
 
-_chip = gpiod.Chip('10008000.gpio')
-_b1 = _chip.get_line(B1_OFFSET)
-_b2 = _chip.get_line(B2_OFFSET)
-_b3 = _chip.get_line(B3_OFFSET)
-_d1 = _chip.get_line(D1_OFFSET)
-_d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-_d1.set_value(1)
-_d2 = _chip.get_line(D2_OFFSET)
-_d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-_d2.set_value(1)
-_d3 = _chip.get_line(D3_OFFSET)
-_d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-_d3.set_value(0)
-_d4 = _chip.get_line(D4_OFFSET)
-_d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-_d4.set_value(0)
+def _print_usage():
+    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME [--no-gpio]')
+    exit (1)
 
-_state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
+for i in argv:
+    if i == '--no-gpio':
+        SKIP_GPIO = True
+        break
+
+if len(argv) == 9 and not SKIP_GPIO:
+    try:
+        B1_OFFSET = int(argv [1])
+        B2_OFFSET = int(argv [2])
+        B3_OFFSET = int(argv [3])
+        D1_OFFSET = int(argv [4])
+        D2_OFFSET = int(argv [5])
+        D3_OFFSET = int(argv [6])
+        D4_OFFSET = int(argv [7])
+        CHIP_NAME = argv [8]
+    except ValueError:
+        _print_usage()
+
+elif len(argv) != 1 and not SKIP_GPIO:
+    _print_usage()
+if not SKIP_GPIO:
+    _chip = gpiod.Chip(CHIP_NAME)
+    _b1 = _chip.get_line(B1_OFFSET)
+    _b2 = _chip.get_line(B2_OFFSET)
+    _b3 = _chip.get_line(B3_OFFSET)
+    _d1 = _chip.get_line(D1_OFFSET)
+    _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    _d1.set_value(1)
+    _d2 = _chip.get_line(D2_OFFSET)
+    _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    _d2.set_value(1)
+    _d3 = _chip.get_line(D3_OFFSET)
+    _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    _d3.set_value(0)
+    _d4 = _chip.get_line(D4_OFFSET)
+    _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    _d4.set_value(0)
+
+    _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 
 def gpio_thread(arg):
     global _state
@@ -146,10 +174,13 @@ def _handle_playback(offset):
         _state = 2
         _set_volume_leds()
 
-_thread = Thread(target = gpio_thread, args = ('',))
-_thread.start()
+if not SKIP_GPIO:
+    _thread = Thread(target = gpio_thread, args = ('',))
+    _thread.start()
 
 def thread_join():
+    if SKIP_GPIO:
+        return
     global _state
     _state = -1
     _thread.join()
