@@ -67,7 +67,7 @@ def gpio_thread(arg):
         events = bulk_event.event_wait(sec = 2)
         if events is not None:
             button = events[0]
-            sleep(0.3)
+            sleep(0.5)
             if button.get_value() == 1:
                 offset = button.offset()
                 if _state == 0:
