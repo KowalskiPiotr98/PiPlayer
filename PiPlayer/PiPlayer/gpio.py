@@ -3,6 +3,7 @@ from PiPlayer.station import Station, radios, radios_mutex
 from threading import Thread
 import gpiod
 from time import sleep
+from sys import argv, exit
 
 B1_OFFSET=12
 B2_OFFSET=13
@@ -11,8 +12,30 @@ D1_OFFSET=24
 D2_OFFSET=25
 D3_OFFSET=26
 D4_OFFSET=27
+CHIP_NAME = '10008000.gpio'
 
-_chip = gpiod.Chip('10008000.gpio')
+def _print_usage():
+    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME')
+    exit (1)
+
+if len(argv) == 9:
+    try:
+        B1_OFFSET = int(argv [1])
+        B2_OFFSET = int(argv [2])
+        B3_OFFSET = int(argv [3])
+        D1_OFFSET = int(argv [4])
+        D2_OFFSET = int(argv [5])
+        D3_OFFSET = int(argv [6])
+        D4_OFFSET = int(argv [7])
+        CHIP_NAME = argv [8]
+    except ValueError:
+        _print_usage()
+
+elif len(argv) != 1:
+    _print_usage()
+
+
+_chip = gpiod.Chip(CHIP_NAME)
 _b1 = _chip.get_line(B1_OFFSET)
 _b2 = _chip.get_line(B2_OFFSET)
 _b3 = _chip.get_line(B3_OFFSET)
