@@ -120,6 +120,14 @@ def new_station_post():
     url = request.form.get('url')
     if name is None or url is None or name == '' or url == '':
         return redirect('/newStation')
+    url = url.strip()
+    if url.startswith('https'):
+        return render_template(
+            'new_station.html',
+            title = 'New station',
+            year = datetime.now().year,
+            error = 'Due to technical limitations of emulation HTTPS is not supported. Only streams using HTTP are allowed.'
+        )
     with radios_mutex:
         for i in radios:
             if i.name == name:
