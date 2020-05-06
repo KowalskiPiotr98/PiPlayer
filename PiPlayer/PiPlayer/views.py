@@ -7,7 +7,7 @@ from flask import render_template, request, redirect
 from PiPlayer import app
 from PiPlayer.station import Station, radios, radios_mutex
 from PiPlayer.player import Player, radio
-from PiPlayer.gpio import thread_join
+from PiPlayer.gpio import thread_join, refresh_playback_leds
 import signal
 import sys
 
@@ -175,6 +175,7 @@ def api_prev():
 @app.route('/api/pause', methods=['POST'])
 def api_pause():
     radio.pause()
+    refresh_playback_leds()
     return '', 200
 
 @app.route('/api/unpause', methods=['POST'])
@@ -187,6 +188,7 @@ def api_unpause():
         radio.change_radio (radios [0].url, radios[0].name)
     else:
         radio.unpause()
+    refresh_playback_leds()
     return radio.get_name(), 200
 
 @app.route('/api/volume/<change>', methods=['POST'])
