@@ -97,7 +97,17 @@ def _handle_volume(offset):
         _d4.set_value(0)
         _state = 0
     
-    
+def refresh_playback_leds():
+    if SKIP_GPIO:
+        return
+    _d3.set_value(0)
+    _d4.set_value(0)
+    _d1.set_value(1)
+    if radio.get_is_playing():
+        _d2.set_value(0)
+    else:
+        _d2.set_value(1)
+
 def _set_volume_leds():
     _d1.set_value(0)
     _d2.set_value(0)
