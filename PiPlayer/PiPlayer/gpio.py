@@ -75,7 +75,7 @@ if not SKIP_GPIO:
     _d3.set_value(0)
     _d4.set_value(0)
 
-    _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
+_state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
 
 def gpio_thread(arg):
     global _state
@@ -91,7 +91,7 @@ def gpio_thread(arg):
             config.request_type = gpiod.line_request.EVENT_FALLING_EDGE
             bulk_event.request(config)
             events = bulk_event.event_wait(timedelta(seconds=2))
-        if events is None or (BUILDROOT_GPIOD and events.size == 0):
+        if events is None or (not BUILDROOT_GPIOD and events.size == 0):
             bulk_event.release()
             continue
         if BUILDROOT_GPIOD:
@@ -102,13 +102,17 @@ def gpio_thread(arg):
             offset = button.offset
         sleep(0.5)
         if button.get_value() == 1:
-            if _state == 0:
-                _handle_playback(offset)
-            elif _state == 1:
-                _handle_selection(offset)
-            elif _state == 2:
-                _handle_volume(offset)
+            _select_action(offset)
         bulk_event.release()
+
+def _select_action(offset: int):
+    global _state
+    if _state == 0:
+        _handle_playback(offset)
+    elif _state == 1:
+        _handle_selection(offset)
+    elif _state == 2:
+        _handle_volume(offset)
 
 def _handle_volume(offset):
     global _state
