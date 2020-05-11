@@ -14,9 +14,10 @@ D3_OFFSET=26
 D4_OFFSET=27
 CHIP_NAME = '10008000.gpio'
 SKIP_GPIO = False
+BUILDROOT_GPIOD = False
 
 def _print_usage():
-    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME [--no-gpio]')
+    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME [--no-gpio] [--buildroot-gpiod]')
     exit (1)
 
 for i in argv:
@@ -40,7 +41,10 @@ if len(argv) == 9 and not SKIP_GPIO:
 elif len(argv) != 1 and not SKIP_GPIO:
     _print_usage()
 if not SKIP_GPIO:
-    _chip = gpiod.Chip(CHIP_NAME)
+    if BUILDROOT_GPIOD:
+        _chip = gpiod.Chip(CHIP_NAME)
+    else:
+        _chip = gpiod.chip(CHIP_NAME)
     _b1 = _chip.get_line(B1_OFFSET)
     _b2 = _chip.get_line(B2_OFFSET)
     _b3 = _chip.get_line(B3_OFFSET)
@@ -62,7 +66,10 @@ if not SKIP_GPIO:
 def gpio_thread(arg):
     global _state
     while _state != -1:
-        bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
+        if BUILDROOT_GPIOD:
+            bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
+        else:
+            bulk_event = gpiod.line_bulk([_b1, _b2, _b3])
         bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
         events = bulk_event.event_wait(sec = 2)
         if events is not None:
