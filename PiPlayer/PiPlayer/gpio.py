@@ -91,21 +91,23 @@ def gpio_thread(arg):
             config.request_type = gpiod.line_request.EVENT_FALLING_EDGE
             bulk_event.request(config)
             events = bulk_event.event_wait(timedelta(seconds=2))
-        if events is not None and (not BUILDROOT_GPIOD and events.size):
-            if BUILDROOT_GPIOD:
-                button = events[0]
-                offset = button.offset()
-            else:
-                button = events.get(0)
-                offset = button.offset
-            sleep(0.5)
-            if button.get_value() == 1:
-                if _state == 0:
-                    _handle_playback(offset)
-                elif _state == 1:
-                    _handle_selection(offset)
-                elif _state == 2:
-                    _handle_volume(offset)
+        if events is None or (BUILDROOT_GPIOD and events.size == 0):
+            bulk_event.release()
+            continue
+        if BUILDROOT_GPIOD:
+            button = events[0]
+            offset = button.offset()
+        else:
+            button = events.get(0)
+            offset = button.offset
+        sleep(0.5)
+        if button.get_value() == 1:
+            if _state == 0:
+                _handle_playback(offset)
+            elif _state == 1:
+                _handle_selection(offset)
+            elif _state == 2:
+                _handle_volume(offset)
         bulk_event.release()
 
 def _handle_volume(offset):
