@@ -53,16 +53,22 @@ if not SKIP_GPIO:
     _b2 = _chip.get_line(B2_OFFSET)
     _b3 = _chip.get_line(B3_OFFSET)
     _d1 = _chip.get_line(D1_OFFSET)
-    _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    if BUILDROOT_GPIOD:
+        _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    else:
+        _d1.request(consumer='PiPlayer', request_type=gpiod.line_request.DIRECTION_OUTPUT)
+        _d2.request(consumer='PiPlayer', request_type=gpiod.line_request.DIRECTION_OUTPUT)
+        _d3.request(consumer='PiPlayer', request_type=gpiod.line_request.DIRECTION_OUTPUT)
+        _d4.request(consumer='PiPlayer', request_type=gpiod.line_request.DIRECTION_OUTPUT)
     _d1.set_value(1)
     _d2 = _chip.get_line(D2_OFFSET)
-    _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
     _d2.set_value(1)
     _d3 = _chip.get_line(D3_OFFSET)
-    _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
     _d3.set_value(0)
     _d4 = _chip.get_line(D4_OFFSET)
-    _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
     _d4.set_value(0)
 
     _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
@@ -72,9 +78,10 @@ def gpio_thread(arg):
     while _state != -1:
         if BUILDROOT_GPIOD:
             bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
+            bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
         else:
             bulk_event = gpiod.line_bulk([_b1, _b2, _b3])
-        bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
+            bulk_event.request(consumer = 'PiPlayer', request_type=gpiod.line_request.EVENT_FALLING_EDGE)
         events = bulk_event.event_wait(sec = 2)
         if events is not None:
             button = events[0]
