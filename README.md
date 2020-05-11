@@ -5,3 +5,4 @@
   - w stanie odtwarzania zapalona jest dioda 1, wciskając przycisk 1 można zapauzować odtwarzanie (zapali się dioda 2) oraz je wznowić tym samym przyciskiem, wciskając przycisk 2 można przejść do stanu wyboru stacji, a wciskając przycisk 3 do stanu zmiany głośności
   - w stanie wyboru stacji zapalona jest dioda 3, przyciskiem 1 wybiera się poprzednią stację z listy, przyciskiem 2 następną, przyciskiem 3 potwierdza wybór i wraca do stanu odtwarzania; w trakcie wybierania odtwarzana stacja jest zmieniana na bieżąco
   - w stanie zmiany głośności przycisk 1 zmniejsza głośność o 25%, przycisk 2 zwiększa głośność o 25%, przycisk 3 potwierdza wybór i wraca do stanu odtwarzania, w tym stanie ilość zapalonych diod wskazuje na aktualnie wybrany poziom głośności (na przykład gdy jest ustawiony na 75% zapalone będą diody 1, 2 i 3).
+- Do wyboru jest wersja pythonowej biblioteki gpiod w wersji standardowej lub dostarczanej przez Buildroota, w której występują różnice
