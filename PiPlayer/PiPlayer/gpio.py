@@ -3,6 +3,7 @@ from PiPlayer.station import Station, radios, radios_mutex
 from threading import Thread
 import gpiod
 from time import sleep
+from datetime import timedelta
 from sys import argv, exit
 
 B1_OFFSET=12
@@ -14,10 +15,15 @@ D3_OFFSET=26
 D4_OFFSET=27
 CHIP_NAME = '10008000.gpio'
 SKIP_GPIO = False
+BUILDROOT_GPIOD = False
 
 def _print_usage():
-    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME [--no-gpio]')
+    print ('USAGE: python3 runserver.py B1_OFFSET B2_OFFSET B3_OFFSET D1_OFFSET D2_OFFSET D3_OFFSET D4_OFFSET CHIP_NAME [--no-gpio] [--buildroot-gpiod]')
     exit (1)
+
+for i in argv:
+    if i == '--help' or i == '-h':
+        _print_usage()
 
 for i in argv:
     if i == '--no-gpio':
@@ -40,21 +46,33 @@ if len(argv) == 9 and not SKIP_GPIO:
 elif len(argv) != 1 and not SKIP_GPIO:
     _print_usage()
 if not SKIP_GPIO:
-    _chip = gpiod.Chip(CHIP_NAME)
+    if BUILDROOT_GPIOD:
+        _chip = gpiod.Chip(CHIP_NAME)
+    else:
+        _chip = gpiod.chip(CHIP_NAME)
     _b1 = _chip.get_line(B1_OFFSET)
     _b2 = _chip.get_line(B2_OFFSET)
     _b3 = _chip.get_line(B3_OFFSET)
     _d1 = _chip.get_line(D1_OFFSET)
-    _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-    _d1.set_value(1)
     _d2 = _chip.get_line(D2_OFFSET)
-    _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-    _d2.set_value(1)
     _d3 = _chip.get_line(D3_OFFSET)
-    _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
-    _d3.set_value(0)
     _d4 = _chip.get_line(D4_OFFSET)
-    _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    if BUILDROOT_GPIOD:
+        _d1.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d2.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d3.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+        _d4.request(consumer='PiPlayer', type=gpiod.LINE_REQ_DIR_OUT)
+    else:
+        config = gpiod.line_request()
+        config.consumer = 'PiPlayer'
+        config.request_type = gpiod.line_request.DIRECTION_OUTPUT
+        _d1.request(config)
+        _d2.request(config)
+        _d3.request(config)
+        _d4.request(config)
+    _d1.set_value(1)
+    _d2.set_value(1)
+    _d3.set_value(0)
     _d4.set_value(0)
 
     _state = 0 #0 - playback, 1 - selection, 2 - volume change, -1 - finish
@@ -62,14 +80,30 @@ if not SKIP_GPIO:
 def gpio_thread(arg):
     global _state
     while _state != -1:
-        bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
-        bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
-        events = bulk_event.event_wait(sec = 2)
-        if events is not None:
-            button = events[0]
+        if BUILDROOT_GPIOD:
+            bulk_event = gpiod.LineBulk([_b1, _b2, _b3])
+            bulk_event.request(consumer='PiPlayer', type=gpiod.LINE_REQ_EV_FALLING_EDGE)
+        else:
+            bulk_event = gpiod.line_bulk([_b1, _b2, _b3])
+            config = gpiod.line_request()
+            config.consumer = 'PiPlayer'
+            config.request_type = gpiod.line_request.EVENT_FALLING_EDGE
+            bulk_event.request(config)
+        if BUILDROOT_GPIOD:
+            events = bulk_event.event_wait(sec = 2)
+        else:
+            events = bulk_event.event_wait(timedelta(seconds=2))
+        if events is not None and (not BUILDROOT_GPIOD and events.size):
+            if BUILDROOT_GPIOD:
+                button = events[0]
+            else:
+                button = events.get(0)
             sleep(0.5)
             if button.get_value() == 1:
-                offset = button.offset()
+                if BUILDROOT_GPIOD:
+                    offset = button.offset()
+                else:
+                    offset = button.offset
                 if _state == 0:
                     _handle_playback(offset)
                 elif _state == 1:
