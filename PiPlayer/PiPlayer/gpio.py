@@ -21,6 +21,10 @@ def _print_usage():
     exit (1)
 
 for i in argv:
+    if i == '--help' or i == '-h':
+        _print_usage()
+
+for i in argv:
     if i == '--no-gpio':
         SKIP_GPIO = True
         break
